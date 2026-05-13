@@ -1,0 +1,39 @@
+:root {
+  --bg:#05070d;
+  --bg2:#0b1230;
+  --glass:rgba(255,255,255,.08);
+  --line:rgba(255,255,255,.12);
+  --text:#f3f6ff;
+  --muted:#96a2c9;
+  --neon:#00ff94;
+  --gold:#f5be4f;
+  --danger:#ff5d7a;
+}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% -20%,#1b2c6a,transparent),var(--bg);color:var(--text);min-height:100vh}
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:-1}
+.container{max-width:1120px;margin:0 auto;padding:1rem 1rem 6rem}
+.topbar{position:sticky;top:.5rem;z-index:50;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.8rem 1rem;margin:.6rem auto;max-width:1120px;border-radius:16px}
+.glass{backdrop-filter:blur(14px);background:var(--glass);border:1px solid var(--line);box-shadow:0 8px 30px rgba(0,0,0,.35)}
+.brand{text-decoration:none;color:white;font-weight:800;letter-spacing:.04em}.brand span{color:var(--neon)}
+nav a{color:var(--text);text-decoration:none;margin:.15rem .35rem;opacity:.95}.btn{display:inline-block;padding:.72rem 1rem;border-radius:12px;background:linear-gradient(135deg,var(--neon),#17b86f);color:#02140b;font-weight:700;text-decoration:none;border:0;cursor:pointer}
+.btn-outline{background:transparent;border:1px solid var(--neon);color:var(--neon)}.btn-gold{background:linear-gradient(135deg,var(--gold),#f6d98a);color:#2f1f00}
+.btn-sm{padding:.45rem .72rem;border-radius:10px}
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:1rem;align-items:center;margin:1.2rem 0}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);margin:.4rem 0}.hero p{color:var(--muted)}
+.card{padding:1rem;border-radius:16px;background:rgba(10,16,38,.72);border:1px solid var(--line)}
+.grid{display:grid;gap:1rem}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.section-title{margin:1.2rem 0 .7rem;font-size:1.25rem;font-weight:800}
+.kpi{font-size:1.6rem;font-weight:800}.muted{color:var(--muted)}.accent{color:var(--neon)}
+form{display:grid;gap:.8rem}label{font-size:.9rem;color:#ccdafc}input,select,textarea{width:100%;padding:.72rem .8rem;border:1px solid var(--line);border-radius:12px;background:rgba(10,16,38,.9);color:var(--text)}
+input:focus,select:focus,textarea:focus{outline:1px solid var(--neon)}
+.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:.65rem;border-bottom:1px solid var(--line);font-size:.92rem;text-align:left;white-space:nowrap}
+.badge{padding:.2rem .55rem;border-radius:999px;border:1px solid var(--line);font-size:.8rem}.pending{color:var(--gold)}.approved{color:var(--neon)}.rejected{color:var(--danger)}
+.bottom-nav{position:fixed;left:50%;transform:translateX(-50%);bottom:.75rem;display:none;justify-content:space-between;gap:.4rem;padding:.5rem;min-width:min(95vw,520px);border-radius:16px}
+.bottom-nav a{flex:1;text-align:center;padding:.6rem .2rem;border-radius:10px;text-decoration:none;color:#dce4ff;font-size:.84rem}
+.bottom-nav a.active,.bottom-nav a:hover{background:rgba(0,255,148,.14);color:var(--neon)}
+.toast{padding:.75rem 1rem;border-radius:12px;margin:.6rem 0}.toast-success{background:rgba(0,255,148,.12);border:1px solid rgba(0,255,148,.5)}.toast-error{background:rgba(255,93,122,.12);border:1px solid rgba(255,93,122,.5)}
+.whatsapp-float{position:fixed;right:1rem;bottom:5rem;background:#24d366;color:#052211;text-decoration:none;padding:.6rem .8rem;border-radius:999px;font-weight:700}
+.counter{font-variant-numeric:tabular-nums}.faq details{border:1px solid var(--line);padding:.7rem .8rem;border-radius:12px;margin:.5rem 0;background:rgba(255,255,255,.03)}
+.skeleton{position:relative;overflow:hidden;background:rgba(255,255,255,.08);height:14px;border-radius:8px}.skeleton::after{content:'';position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);animation:sh 1.2s infinite}
+@keyframes sh{100%{transform:translateX(100%)}}
+@media (max-width:900px){.hero,.grid-3,.grid-2{grid-template-columns:1fr}.topbar nav{display:none}.bottom-nav{display:flex}}
