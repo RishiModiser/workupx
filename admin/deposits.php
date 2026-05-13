@@ -17,6 +17,20 @@ if (is_post()) {
             db()->prepare('UPDATE deposits SET status="approved", admin_note = :note WHERE id = :id')->execute(['note' => $note, 'id' => $id]);
             db()->prepare('UPDATE users SET balance = balance + :amount WHERE id = :uid')->execute(['amount' => $d['amount'], 'uid' => $d['user_id']]);
             db()->prepare('INSERT INTO notifications (user_id, title, body, type, created_at) VALUES (:uid,"Deposit Approved",:body,"deposit",NOW())')->execute(['uid' => $d['user_id'], 'body' => 'Your deposit has been approved.']);
+
+            // Credit referral commission to the referrer if applicable
+            $commPct = (float) app_setting('referral_commission_percent', '5');
+            $refRow = db()->prepare('SELECT * FROM referrals WHERE referred_user_id = :uid AND status = "pending" LIMIT 1');
+            $refRow->execute(['uid' => $d['user_id']]);
+            $ref = $refRow->fetch();
+            if ($ref && $commPct > 0) {
+                $commission = round((float) $d['amount'] * $commPct / 100, 2);
+                db()->prepare('UPDATE referrals SET commission_amount = commission_amount + :c, status = "credited" WHERE id = :id')->execute(['c' => $commission, 'id' => $ref['id']]);
+                db()->prepare('UPDATE users SET balance = balance + :c, referral_earnings = referral_earnings + :c, total_earnings = total_earnings + :c WHERE id = :uid')->execute(['c' => $commission, 'uid' => $ref['referrer_user_id']]);
+                db()->prepare('INSERT INTO earnings (user_id, source_type, source_id, amount, note, created_at) VALUES (:uid,"referral",:src,:amount,:note,NOW())')->execute(['uid' => $ref['referrer_user_id'], 'src' => $ref['id'], 'amount' => $commission, 'note' => 'Referral commission from deposit approval.']);
+                db()->prepare('INSERT INTO notifications (user_id, title, body, type, created_at) VALUES (:uid,"Referral Commission Credited",:body,"system",NOW())')->execute(['uid' => $ref['referrer_user_id'], 'body' => 'You earned $' . number_format($commission, 2) . ' referral commission.']);
+            }
+
             log_admin('approve_deposit', 'deposit_id=' . $id);
         }
         if ($action === 'reject') {

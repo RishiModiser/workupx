@@ -17,6 +17,11 @@ if (is_post()) {
                 ->execute(['uid' => (int) $user['id'], 'token_hash' => $tokenHash]);
 
             $resetLink = APP_URL . '/reset-password.php?token=' . urlencode($token);
+            require_once __DIR__ . '/includes/email_templates.php';
+            $subject = APP_NAME . ' – Password Reset';
+            $body = email_template_reset((string) $user['full_name'], $resetLink);
+            $headers = 'From: noreply@' . APP_DOMAIN . "\r\nContent-Type: text/plain; charset=UTF-8";
+            @mail($email, $subject, $body, $headers);
             error_log('WORKUPX reset link for ' . $email . ': ' . $resetLink);
         }
     }

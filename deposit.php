@@ -65,7 +65,23 @@ require_once __DIR__ . '/includes/header.php';
     <h2>Wallet Addresses</h2>
     <p>USDT (BEP20): <code><?= e($usdtWallet) ?></code> <button class="btn btn-sm" data-copy="<?= e($usdtWallet) ?>">Copy</button></p>
     <p>USDC: <code><?= e($usdcWallet) ?></code> <button class="btn btn-sm" data-copy="<?= e($usdcWallet) ?>">Copy</button></p>
-    <img alt="QR placeholder" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=WORKUPX" style="border-radius:12px;max-width:180px">
+    <img alt="QR code" id="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=<?= urlencode($usdtWallet) ?>" style="border-radius:12px;max-width:180px">
+    <script>
+    (function(){
+      var wallets = {
+        'USDT_BEP20': <?= json_encode($usdtWallet) ?>,
+        'USDC': <?= json_encode($usdcWallet) ?>
+      };
+      var assetSelect = document.querySelector('select[name="asset"]');
+      var qrImg = document.getElementById('qr-img');
+      if(assetSelect && qrImg){
+        assetSelect.addEventListener('change', function(){
+          var addr = wallets[assetSelect.value] || '';
+          qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(addr);
+        });
+      }
+    })();
+    </script>
     <p><a class="btn btn-gold" target="_blank" rel="noopener" href="<?= e(WHATSAPP_SUPPORT) ?>">Confirm on WhatsApp</a></p>
   </div>
 </section>

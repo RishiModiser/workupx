@@ -41,6 +41,13 @@ require_once __DIR__ . '/includes/header.php';
   <div class="card"><div class="muted">Package</div><div class="kpi"><?= e(strtoupper((string) $user['package_name'])) ?></div></div>
 </section>
 
+<section style="display:flex;gap:.8rem;margin-top:1rem;flex-wrap:wrap">
+  <a class="btn" href="/deposit.php">+ Deposit</a>
+  <a class="btn btn-outline" href="/withdrawal.php">Withdraw</a>
+  <a class="btn btn-outline" href="/trade.php">Trade</a>
+  <a class="btn btn-outline" href="/referral.php">Referral</a>
+</section>
+
 <section class="grid grid-2" style="margin-top:1rem">
   <div class="card"><h2>Deposit History</h2><div class="table-wrap"><table class="table"><tbody><?php foreach ($deposits->fetchAll() as $row): ?><tr><td><?= e($row['created_at']) ?></td><td><?= format_money((float)$row['amount']) ?></td><td class="<?= e($row['status']) ?>"><?= e($row['status']) ?></td></tr><?php endforeach; ?></tbody></table></div></div>
   <div class="card"><h2>Withdrawal History</h2><div class="table-wrap"><table class="table"><tbody><?php foreach ($withdrawals->fetchAll() as $row): ?><tr><td><?= e($row['created_at']) ?></td><td><?= format_money((float)$row['amount']) ?></td><td class="<?= e($row['status']) ?>"><?= e($row['status']) ?></td></tr><?php endforeach; ?></tbody></table></div></div>

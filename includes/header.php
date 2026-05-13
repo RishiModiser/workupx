@@ -26,10 +26,21 @@ $metaDescription = $metaDescription ?? 'WORKUPX community investment education p
         <a href="/community.php">Community</a>
         <a href="/quote.php">Quote</a>
         <a href="/trade.php">Trade</a>
+        <a href="/deposit.php">Deposit</a>
+        <a href="/withdrawal.php">Withdraw</a>
         <a href="/assets.php">Assets</a>
         <a href="/referral.php">Referral</a>
         <?php if (!empty($_SESSION['user_id'])): ?>
+            <?php
+            $unreadNotifCount = 0;
+            try {
+                $nStmt = db()->prepare('SELECT COUNT(*) c FROM notifications WHERE user_id = :uid AND is_read = 0');
+                $nStmt->execute(['uid' => (int) $_SESSION['user_id']]);
+                $unreadNotifCount = (int) ($nStmt->fetch()['c'] ?? 0);
+            } catch (Throwable $ignored) {}
+            ?>
             <a href="/profile.php">Profile</a>
+            <a href="/notifications.php">Notifications<?= $unreadNotifCount > 0 ? ' <span class="notif-badge">' . $unreadNotifCount . '</span>' : '' ?></a>
             <a href="/logout.php">Logout</a>
         <?php else: ?>
             <a href="/login.php">Login</a>

@@ -21,6 +21,16 @@ if (is_post()) {
             db()->prepare('UPDATE users SET balance = :balance WHERE id = :id')->execute(['balance' => $balance, 'id' => $userId]);
             log_admin('edit_balance', 'user_id=' . $userId . ',balance=' . $balance);
         }
+        if ($action === 'add_earning') {
+            $amount = (float) ($_POST['earning_amount'] ?? 0);
+            $note = trim((string) ($_POST['earning_note'] ?? 'Manual admin credit'));
+            if ($amount > 0) {
+                db()->prepare('INSERT INTO earnings (user_id, source_type, amount, note, created_at) VALUES (:uid,"manual",:amount,:note,NOW())')->execute(['uid' => $userId, 'amount' => $amount, 'note' => $note]);
+                db()->prepare('UPDATE users SET balance = balance + :amount, total_earnings = total_earnings + :amount WHERE id = :id')->execute(['amount' => $amount, 'id' => $userId]);
+                db()->prepare('INSERT INTO notifications (user_id, title, body, type, created_at) VALUES (:uid,"Earnings Credited",:body,"system",NOW())')->execute(['uid' => $userId, 'body' => 'Admin credited $' . number_format($amount, 2) . ': ' . $note]);
+                log_admin('add_earning', 'user_id=' . $userId . ',amount=' . $amount);
+            }
+        }
     }
     set_flash('success', 'User action completed.');
     redirect('/admin/users.php');
@@ -69,14 +79,21 @@ require_once __DIR__ . '/../includes/header.php';
         <form method="post" action="/admin/users.php" style="display:flex;gap:.3rem;flex-wrap:wrap">
           <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
           <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
-          <input type="number" step="0.01" name="balance" placeholder="Balance">
-          <button class="btn btn-sm" name="action" value="balance">Update</button>
+          <input type="number" step="0.01" name="balance" placeholder="Set balance">
+          <button class="btn btn-sm" name="action" value="balance">Set Bal</button>
+          <input type="number" step="0.01" min="0.01" name="earning_amount" placeholder="Add earning">
+          <input name="earning_note" placeholder="Earning note" maxlength="120">
+          <button class="btn btn-sm btn-gold" name="action" value="add_earning">Credit</button>
           <?php if ((int) $u['is_banned'] === 0): ?><button class="btn btn-sm btn-outline" name="action" value="ban">Ban</button><?php else: ?><button class="btn btn-sm" name="action" value="unban">Unban</button><?php endif; ?>
         </form>
       </td>
     </tr>
     <?php endforeach; ?>
   </tbody></table></div>
-  <p>Page <?= $p['page'] ?> / <?= $p['totalPages'] ?></p>
+  <p style="display:flex;gap:.5rem;align-items:center">
+    <?php if ($p['page'] > 1): ?><a class="btn btn-sm btn-outline" href="?q=<?= urlencode($q) ?>&page=<?= $p['page'] - 1 ?>">← Prev</a><?php endif; ?>
+    Page <?= $p['page'] ?> / <?= $p['totalPages'] ?>
+    <?php if ($p['page'] < $p['totalPages']): ?><a class="btn btn-sm btn-outline" href="?q=<?= urlencode($q) ?>&page=<?= $p['page'] + 1 ?>">Next →</a><?php endif; ?>
+  </p>
 </section>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

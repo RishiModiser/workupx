@@ -46,13 +46,16 @@ if (is_post()) {
     ]);
 
     if (!$isLoss) {
+        $tradeInsertId = (int) db()->lastInsertId();
         $earning = db()->prepare('INSERT INTO earnings (user_id, source_type, source_id, amount, note, created_at) VALUES (:user_id,"trade",:source_id,:amount,:note,NOW())');
         $earning->execute([
             'user_id' => (int) $user['id'],
-            'source_id' => (int) db()->lastInsertId(),
+            'source_id' => $tradeInsertId,
             'amount' => $estimated,
             'note' => 'Estimated Profit from educational trade simulation.',
         ]);
+        db()->prepare('UPDATE users SET balance = balance + :amount, total_earnings = total_earnings + :amount WHERE id = :id')
+            ->execute(['amount' => $estimated, 'id' => (int) $user['id']]);
     }
 
     $notif = db()->prepare('INSERT INTO notifications (user_id, title, body, type, created_at) VALUES (:user_id,:title,:body,"trade",NOW())');

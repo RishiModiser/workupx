@@ -15,7 +15,7 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="card">
   <h1>Super Admin Dashboard</h1>
-  <p><a href="/admin/users.php">Users</a> • <a href="/admin/deposits.php">Deposits</a> • <a href="/admin/withdrawals.php">Withdrawals</a> • <a href="/admin/signals.php">Signals</a> • <a href="/admin/announcements.php">Announcements</a> • <a href="/admin/settings.php">Settings</a> • <a href="/admin/logout.php">Logout</a></p>
+  <p><a href="/admin/users.php">Users</a> • <a href="/admin/deposits.php">Deposits</a> • <a href="/admin/withdrawals.php">Withdrawals</a> • <a href="/admin/signals.php">Signals</a> • <a href="/admin/announcements.php">Announcements</a> • <a href="/admin/earnings.php">Earnings</a> • <a href="/admin/settings.php">Settings</a> • <a href="/admin/logout.php">Logout</a></p>
 </section>
 <section class="grid grid-3" style="margin-top:1rem">
   <div class="card"><div class="muted">Total Users</div><div class="kpi" data-count="<?= $stats['users'] ?>"><?= $stats['users'] ?></div></div>

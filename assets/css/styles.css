@@ -24,6 +24,7 @@ nav a{color:var(--text);text-decoration:none;margin:.15rem .35rem;opacity:.95}.b
 .grid{display:grid;gap:1rem}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .section-title{margin:1.2rem 0 .7rem;font-size:1.25rem;font-weight:800}
 .kpi{font-size:1.6rem;font-weight:800}.muted{color:var(--muted)}.accent{color:var(--neon)}
+.notif-badge{display:inline-block;background:var(--danger);color:#fff;font-size:.7rem;font-weight:700;border-radius:999px;padding:.05rem .4rem;margin-left:.2rem;vertical-align:middle}
 form{display:grid;gap:.8rem}label{font-size:.9rem;color:#ccdafc}input,select,textarea{width:100%;padding:.72rem .8rem;border:1px solid var(--line);border-radius:12px;background:rgba(10,16,38,.9);color:var(--text)}
 input:focus,select:focus,textarea:focus{outline:1px solid var(--neon)}
 .table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:.65rem;border-bottom:1px solid var(--line);font-size:.92rem;text-align:left;white-space:nowrap}

@@ -83,6 +83,13 @@ if (is_post()) {
         }
 
         $pdo->commit();
+
+        require_once __DIR__ . '/includes/email_templates.php';
+        $welcomeSubject = APP_NAME . ' – Welcome!';
+        $welcomeBody = email_template_welcome($fullName);
+        $welcomeHeaders = 'From: noreply@' . APP_DOMAIN . "\r\nContent-Type: text/plain; charset=UTF-8";
+        @mail($email, $welcomeSubject, $welcomeBody, $welcomeHeaders);
+
         set_flash('success', 'Registration successful. Please log in.');
         redirect('/login.php');
     } catch (Throwable $e) {
