@@ -75,6 +75,7 @@ if (is_post()) {
         redirect('/login.php');
     } catch (Throwable $e) {
         $pdo->rollBack();
+        error_log('Registration failed: ' . $e->getMessage());
         set_flash('error', 'Registration failed, please try again.');
         redirect('/register.php');
     }

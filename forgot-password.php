@@ -7,9 +7,7 @@ if (is_post()) {
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $stmt = db()->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
         $stmt->execute(['email' => $email]);
-        if ($stmt->fetch()) {
-            set_flash('success', 'Password reset instructions have been prepared and queued.');
-        }
+        $stmt->fetch();
     }
     set_flash('success', 'If an account exists, password reset instructions will be sent.');
     redirect('/forgot-password.php');

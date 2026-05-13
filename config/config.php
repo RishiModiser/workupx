@@ -16,7 +16,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 const APP_NAME = 'WORKUPX';
 const APP_DOMAIN = 'WORKUPX.COM';
-const APP_URL = 'http://localhost';
 const WHATSAPP_SUPPORT = 'https://wa.me/0000000000';
 
 const DB_HOST = '127.0.0.1';
@@ -30,6 +29,14 @@ const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
 
 const ROLE_USER = 'user';
 const ROLE_ADMIN = 'admin';
+const LOGIN_MAX_ATTEMPTS = 5;
+const LOGIN_LOCK_SECONDS = 900;
+
+$defaultScheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$defaultHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+if (!defined('APP_URL')) {
+    define('APP_URL', rtrim((string) (getenv('APP_URL') ?: "{$defaultScheme}://{$defaultHost}"), '/'));
+}
 
 error_reporting(E_ALL);
 ini_set('display_errors', '0');

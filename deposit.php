@@ -31,7 +31,7 @@ if (is_post()) {
 
         set_flash('success', 'Deposit request submitted. Confirm on WhatsApp for manual verification.');
     } catch (Throwable $e) {
-        set_flash('error', 'Upload failed. Please use JPG/PNG/WEBP under 5MB.');
+        set_flash('error', 'Upload failed. Please verify image format, file size, and try again.');
     }
 
     redirect('/deposit.php');

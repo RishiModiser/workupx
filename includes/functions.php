@@ -79,7 +79,7 @@ function upload_image(array $file): ?string
     }
 
     if (($file['size'] ?? 0) > MAX_UPLOAD_SIZE) {
-        throw new RuntimeException('File too large.');
+        throw new RuntimeException('File too large. Maximum allowed size is 5MB.');
     }
 
     $finfo = new finfo(FILEINFO_MIME_TYPE);

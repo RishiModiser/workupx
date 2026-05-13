@@ -86,7 +86,7 @@ function throttle_login(array $user): void
 
 function register_failed_attempt(int $userId, int $attempts): void
 {
-    $lockedUntil = $attempts >= 5 ? date('Y-m-d H:i:s', time() + 900) : null;
+    $lockedUntil = $attempts >= LOGIN_MAX_ATTEMPTS ? date('Y-m-d H:i:s', time() + LOGIN_LOCK_SECONDS) : null;
 
     $stmt = db()->prepare('UPDATE users SET failed_login_attempts = :attempts, locked_until = :locked_until WHERE id = :id');
     $stmt->execute([

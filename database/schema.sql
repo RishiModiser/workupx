@@ -140,5 +140,5 @@ INSERT INTO settings (setting_key, setting_value) VALUES
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
 
 INSERT INTO users (full_name, email, phone, password_hash, role, referral_code, package_name)
-VALUES ('Super Admin', 'admin@workupx.com', '+10000000000', '$2y$10$F2gp9R1V1s0ZKmZLXqmgC.17Uoq5DgKeWRN0ZK/6Xvc17Bip19u96', 'admin', 'WORKUPXADMIN', 'premium')
+VALUES ('Super Admin', 'admin@workupx.com', '+10000000000', '$2y$10$Z7cn6UaV.r6Q2dMcm1rqEeQnE0dTVahdVMYlL6Xl..ccTi1.Z2vPm', 'admin', 'WORKUPXADMIN', 'premium')
 ON DUPLICATE KEY UPDATE role = 'admin';

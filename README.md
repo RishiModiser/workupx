@@ -38,8 +38,14 @@ Professional crypto community and referral investment education platform for **W
 
 ## Seed Admin
 - Email: `admin@workupx.com`
-- Password: `Workupx@Admin123`
 - Admin login page: `/admin/login.php`
+- After import, set a secure admin password before first login:
+  ```sql
+  UPDATE users
+  SET password_hash = '$2y$10$QzQviIZ3v9u6sbeB6lA0MOkb0fM5G5Eq8cF6oY2B8g6Y4J.k0m8Ji'
+  WHERE email = 'admin@workupx.com';
+  ```
+  (Replace hash with your own generated `password_hash` output from PHP.)
 
 ## Security Notes
 - Uses PDO prepared statements throughout

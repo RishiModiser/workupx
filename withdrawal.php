@@ -15,7 +15,12 @@ if (is_post()) {
         redirect('/withdrawal.php');
     }
 
-    if ($amount > (float) $user['balance']) {
+    $pendingStmt = db()->prepare('SELECT COALESCE(SUM(amount),0) as total FROM withdrawals WHERE user_id = :uid AND status = "pending"');
+    $pendingStmt->execute(['uid' => (int) $user['id']]);
+    $pendingTotal = (float) ($pendingStmt->fetch()['total'] ?? 0);
+    $availableBalance = max(0, (float) $user['balance'] - $pendingTotal);
+
+    if ($amount > $availableBalance) {
         set_flash('error', 'Insufficient balance for this request.');
         redirect('/withdrawal.php');
     }

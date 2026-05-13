@@ -19,7 +19,10 @@ if (is_post()) {
     $min = (float) app_setting('estimated_profit_min', '1.5');
     $max = (float) app_setting('estimated_profit_max', '4.8');
     $lossChance = (int) app_setting('estimated_loss_chance_percent', '28');
-    $isLoss = random_int(1, 100) <= max(0, min(95, $lossChance));
+    if ($min > $max) {
+        [$min, $max] = [$max, $min];
+    }
+    $isLoss = random_int(1, 100) <= max(0, min(100, $lossChance));
     $percent = round((float) (random_int((int) ($min * 100), (int) ($max * 100)) / 100), 2);
     $packageAmount = match ($user['package_name']) {
         'premium' => 200.0,
