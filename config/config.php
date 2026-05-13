@@ -16,7 +16,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 const APP_NAME = 'WORKUPX';
 const APP_DOMAIN = 'WORKUPX.COM';
-const WHATSAPP_SUPPORT = 'https://wa.me/0000000000';
+const DEFAULT_WHATSAPP_SUPPORT = 'https://wa.me/0000000000';
 
 const DB_HOST = '127.0.0.1';
 const DB_NAME = 'workupx';
@@ -31,11 +31,18 @@ const ROLE_USER = 'user';
 const ROLE_ADMIN = 'admin';
 const LOGIN_MAX_ATTEMPTS = 5;
 const LOGIN_LOCK_SECONDS = 900;
+const MAX_REFERRAL_CODE_ATTEMPTS = 10;
+const MIN_DEPOSIT_AMOUNT = 10.0;
+const MIN_WITHDRAWAL_AMOUNT = 5.0;
+const WITHDRAWAL_PROCESSING_HOURS = 24;
 
 $defaultScheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $defaultHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
 if (!defined('APP_URL')) {
     define('APP_URL', rtrim((string) (getenv('APP_URL') ?: "{$defaultScheme}://{$defaultHost}"), '/'));
+}
+if (!defined('WHATSAPP_SUPPORT')) {
+    define('WHATSAPP_SUPPORT', (string) (getenv('WHATSAPP_SUPPORT') ?: DEFAULT_WHATSAPP_SUPPORT));
 }
 
 error_reporting(E_ALL);

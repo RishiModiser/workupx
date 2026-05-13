@@ -129,6 +129,15 @@ CREATE TABLE IF NOT EXISTS settings (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS password_resets (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    token_hash VARCHAR(255) NOT NULL UNIQUE,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 INSERT INTO settings (setting_key, setting_value) VALUES
 ('estimated_profit_min', '1.5'),
 ('estimated_profit_max', '4.8'),
@@ -138,7 +147,3 @@ INSERT INTO settings (setting_key, setting_value) VALUES
 ('usdc_wallet_address', 'TUSDC_DEMO_ADDRESS'),
 ('site_notice', 'Educational Trade Signals only. Results shown are estimated, not guaranteed.')
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);
-
-INSERT INTO users (full_name, email, phone, password_hash, role, referral_code, package_name)
-VALUES ('Super Admin', 'admin@workupx.com', '+10000000000', '$2y$10$Z7cn6UaV.r6Q2dMcm1rqEeQnE0dTVahdVMYlL6Xl..ccTi1.Z2vPm', 'admin', 'WORKUPXADMIN', 'premium')
-ON DUPLICATE KEY UPDATE role = 'admin';

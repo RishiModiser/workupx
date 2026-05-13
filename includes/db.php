@@ -12,9 +12,15 @@ function db(): PDO
         return $pdo;
     }
 
-    $dsn = sprintf('mysql:host=%s;dbname=%s;charset=%s', DB_HOST, DB_NAME, DB_CHARSET);
+    $host = (string) (getenv('DB_HOST') ?: DB_HOST);
+    $name = (string) (getenv('DB_NAME') ?: DB_NAME);
+    $user = (string) (getenv('DB_USER') ?: DB_USER);
+    $pass = (string) (getenv('DB_PASS') ?: DB_PASS);
+    $charset = (string) (getenv('DB_CHARSET') ?: DB_CHARSET);
 
-    $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+    $dsn = sprintf('mysql:host=%s;dbname=%s;charset=%s', $host, $name, $charset);
+
+    $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,

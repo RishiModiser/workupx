@@ -72,7 +72,7 @@ function bootstrap_remember_me(): void
     $stmt->execute(['hash' => $tokenHash]);
     $user = $stmt->fetch();
 
-    if ($user) {
+    if ($user && ((int) ($user['is_banned'] ?? 0) === 0)) {
         login_user($user, false);
     }
 }

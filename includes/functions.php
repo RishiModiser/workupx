@@ -79,7 +79,8 @@ function upload_image(array $file): ?string
     }
 
     if (($file['size'] ?? 0) > MAX_UPLOAD_SIZE) {
-        throw new RuntimeException('File too large. Maximum allowed size is 5MB.');
+        $maxMb = number_format(MAX_UPLOAD_SIZE / (1024 * 1024), 0);
+        throw new RuntimeException('File too large. Maximum allowed size is ' . $maxMb . 'MB.');
     }
 
     $finfo = new finfo(FILEINFO_MIME_TYPE);
@@ -108,6 +109,27 @@ function upload_image(array $file): ?string
 function format_money(float $amount): string
 {
     return '$' . number_format($amount, 2);
+}
+
+function calculate_available_withdrawal_balance(int $userId, ?int $excludeWithdrawalId = null): float
+{
+    $balanceStmt = db()->prepare('SELECT balance FROM users WHERE id = :uid LIMIT 1');
+    $balanceStmt->execute(['uid' => $userId]);
+    $balance = (float) ($balanceStmt->fetch()['balance'] ?? 0);
+
+    $query = 'SELECT COALESCE(SUM(amount),0) AS total FROM withdrawals WHERE user_id = :uid AND status = "pending"';
+    $params = ['uid' => $userId];
+
+    if ($excludeWithdrawalId !== null) {
+        $query .= ' AND id != :exclude_id';
+        $params['exclude_id'] = $excludeWithdrawalId;
+    }
+
+    $pendingStmt = db()->prepare($query);
+    $pendingStmt->execute($params);
+    $pending = (float) ($pendingStmt->fetch()['total'] ?? 0);
+
+    return max(0, $balance - $pending);
 }
 
 function current_user(): ?array

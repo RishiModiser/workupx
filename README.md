@@ -30,6 +30,8 @@ Professional crypto community and referral investment education platform for **W
 1. Create MySQL database: `workupx`
 2. Import schema: `database/schema.sql`
 3. Configure DB credentials in `config/config.php`
+   - Or set environment variables: `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS`, `DB_CHARSET`
+   - Set `WHATSAPP_SUPPORT` to your real support number URL (the default is a placeholder).
 4. Serve project with PHP (example):
    ```bash
    php -S 127.0.0.1:8000
@@ -37,15 +39,17 @@ Professional crypto community and referral investment education platform for **W
 5. Open `http://127.0.0.1:8000`
 
 ## Seed Admin
-- Email: `admin@workupx.com`
 - Admin login page: `/admin/login.php`
-- After import, set a secure admin password before first login:
+- Create your first admin user after import:
   ```sql
-  UPDATE users
-  SET password_hash = '$2y$10$QzQviIZ3v9u6sbeB6lA0MOkb0fM5G5Eq8cF6oY2B8g6Y4J.k0m8Ji'
-  WHERE email = 'admin@workupx.com';
+  INSERT INTO users (full_name, email, phone, password_hash, role, referral_code, package_name)
+  VALUES ('Super Admin', 'admin@workupx.com', '+10000000000', '<PASSWORD_HASH>', 'admin', 'WORKUPXADMIN', 'premium');
   ```
-  (Replace hash with your own generated `password_hash` output from PHP.)
+  Replace the example phone with your real admin contact number.
+  Generate `<PASSWORD_HASH>` with:
+  ```bash
+  php -r "echo password_hash('YOUR_STRONG_PASSWORD', PASSWORD_DEFAULT), PHP_EOL;"
+  ```
 
 ## Security Notes
 - Uses PDO prepared statements throughout

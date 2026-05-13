@@ -49,7 +49,19 @@ if (is_post()) {
             }
         }
 
-        $myCode = random_code(10);
+        $myCode = '';
+        for ($i = 0; $i < MAX_REFERRAL_CODE_ATTEMPTS; $i++) {
+            $candidate = random_code(10);
+            $codeCheck = $pdo->prepare('SELECT id FROM users WHERE referral_code = :code LIMIT 1');
+            $codeCheck->execute(['code' => $candidate]);
+            if (!$codeCheck->fetch()) {
+                $myCode = $candidate;
+                break;
+            }
+        }
+        if ($myCode === '') {
+            throw new RuntimeException('Unable to generate unique referral code.');
+        }
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
         $stmt = $pdo->prepare('INSERT INTO users (full_name, email, phone, password_hash, referral_code, referred_by_user_id, package_name, created_at, updated_at) VALUES (:full_name,:email,:phone,:password_hash,:referral_code,:referred_by,:package,NOW(),NOW())');

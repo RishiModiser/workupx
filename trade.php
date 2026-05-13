@@ -83,7 +83,7 @@ require_once __DIR__ . '/includes/header.php';
       <label>Signal Code <input name="signal_code" maxlength="40" required></label>
       <button class="btn" type="submit">Run Simulated Trade</button>
     </form>
-    <p class="muted">Estimated Educational Result only. No guaranteed profits.</p>
+    <p class="muted">Estimated Educational Result only. No guaranteed profits. If balance is zero, package baseline is used for education-only estimation.</p>
   </div>
   <div class="card">
     <h2>Active Signals</h2>

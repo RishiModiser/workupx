@@ -13,7 +13,7 @@ if (is_post()) {
     $asset = (string) ($_POST['asset'] ?? 'USDT_BEP20');
     $wallet = $asset === 'USDC' ? $usdcWallet : $usdtWallet;
 
-    if ($amount <= 0 || !in_array($asset, ['USDT_BEP20', 'USDC'], true)) {
+    if ($amount < MIN_DEPOSIT_AMOUNT || !in_array($asset, ['USDT_BEP20', 'USDC'], true)) {
         set_flash('error', 'Invalid deposit details.');
         redirect('/deposit.php');
     }
@@ -49,7 +49,7 @@ require_once __DIR__ . '/includes/header.php';
     <h1>Manual Deposit</h1>
     <form method="post" action="/deposit.php" enctype="multipart/form-data">
       <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
-      <label>Amount (USD) <input type="number" name="amount" step="0.01" min="10" required></label>
+      <label>Amount (USD) <input type="number" name="amount" step="0.01" min="<?= MIN_DEPOSIT_AMOUNT ?>" required></label>
       <label>Asset
         <select name="asset">
           <option value="USDT_BEP20">USDT (BEP20)</option>

@@ -14,6 +14,13 @@ if (is_post()) {
 
     if ($w && $w['status'] === 'pending') {
         if ($action === 'approve') {
+            $available = calculate_available_withdrawal_balance((int) $w['user_id'], $id);
+
+            if ((float) $w['amount'] > $available) {
+                set_flash('error', 'Cannot approve: user available balance is lower than this request.');
+                redirect('/admin/withdrawals.php');
+            }
+
             db()->prepare('UPDATE withdrawals SET status="approved", admin_note = :note WHERE id = :id')->execute(['note' => $note, 'id' => $id]);
             db()->prepare('UPDATE users SET balance = GREATEST(0, balance - :amount) WHERE id = :uid')->execute(['amount' => $w['amount'], 'uid' => $w['user_id']]);
             db()->prepare('INSERT INTO notifications (user_id, title, body, type, created_at) VALUES (:uid,"Withdrawal Approved",:body,"withdrawal",NOW())')->execute(['uid' => $w['user_id'], 'body' => 'Your withdrawal has been approved.']);
