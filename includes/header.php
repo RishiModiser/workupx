@@ -42,11 +42,11 @@ $metaDescription = $metaDescription ?? 'WORKUPX community investment education p
         </nav>
     </div>
     <div class="ticker" aria-hidden="true">
-        <span>BTC +2.1%</span>
-        <span>ETH +1.6%</span>
-        <span>SOL +3.9%</span>
-        <span>BNB +1.1%</span>
-        <span>XRP +0.8%</span>
+        <span>BTC Live</span>
+        <span>ETH Live</span>
+        <span>SOL Live</span>
+        <span>BNB Live</span>
+        <span>XRP Live</span>
     </div>
 </header>
 <main class="container">

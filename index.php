@@ -37,9 +37,9 @@ require_once __DIR__ . '/includes/header.php';
     </div>
     <script src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>{"symbols":[{"description":"BTC/USDT","proName":"BINANCE:BTCUSDT"},{"description":"ETH/USDT","proName":"BINANCE:ETHUSDT"},{"description":"BNB/USDT","proName":"BINANCE:BNBUSDT"},{"description":"SOL/USDT","proName":"BINANCE:SOLUSDT"},{"description":"XRP/USDT","proName":"BINANCE:XRPUSDT"}],"showSymbolLogo":true,"isTransparent":true,"displayMode":"adaptive","colorTheme":"dark","locale":"en"}</script>
     <div class="mini-market-grid">
-      <div class="mini-market-card"><span>BTC</span><strong class="accent">$67,420</strong></div>
-      <div class="mini-market-card"><span>ETH</span><strong class="accent">$3,450</strong></div>
-      <div class="mini-market-card"><span>SOL</span><strong class="accent">$158</strong></div>
+      <div class="mini-market-card"><span>BTC</span><strong class="accent">Live Widget</strong></div>
+      <div class="mini-market-card"><span>ETH</span><strong class="accent">Live Widget</strong></div>
+      <div class="mini-market-card"><span>SOL</span><strong class="accent">Live Widget</strong></div>
     </div>
     <div class="skeleton"></div>
   </div>
@@ -82,17 +82,17 @@ require_once __DIR__ . '/includes/header.php';
   <article class="card reward-card reveal fade-up">
     <h3>Starter Stage</h3>
     <p class="muted">Build referral network foundation</p>
-    <div class="progress"><span style="width:45%"></span></div>
+    <div class="progress" data-progress="45"><span></span></div>
   </article>
   <article class="card reward-card reveal fade-up">
     <h3>Growth Stage</h3>
     <p class="muted">Unlock higher monthly salary tiers</p>
-    <div class="progress"><span style="width:68%"></span></div>
+    <div class="progress" data-progress="68"><span></span></div>
   </article>
   <article class="card reward-card reveal fade-up">
     <h3>Elite Stage</h3>
     <p class="muted">Top-tier referral achievement rewards</p>
-    <div class="progress"><span style="width:82%"></span></div>
+    <div class="progress" data-progress="82"><span></span></div>
   </article>
 </section>
 

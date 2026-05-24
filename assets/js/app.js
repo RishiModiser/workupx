@@ -43,7 +43,7 @@
           setTimeout(() => {
             btn.textContent = prev || 'Copy';
           }, 1500);
-        } catch (_) {
+        } catch (error) {
           alert('Copy failed');
         }
       });
@@ -182,6 +182,18 @@
     });
   };
 
+  const progressBars = () => {
+    document.querySelectorAll('[data-progress]').forEach((el) => {
+      const value = Number(el.getAttribute('data-progress') || 0);
+      const bar = el.querySelector('span');
+      if (!bar) {
+        return;
+      }
+
+      bar.style.width = `${Math.max(0, Math.min(100, value))}%`;
+    });
+  };
+
   showToasts();
   animateCounters();
   copyButtons();
@@ -192,4 +204,5 @@
   buttonRipple();
   passwordToggle();
   timeframeTabs();
+  progressBars();
 })();
