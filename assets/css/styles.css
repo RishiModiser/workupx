@@ -155,7 +155,7 @@ body {
   height: 8px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 0 rgba(0, 229, 143, 0.6);
+  box-shadow: 0 0 0 2px rgba(0, 229, 143, 0.3);
   animation: pulse 1.7s infinite;
 }
 
@@ -336,7 +336,7 @@ p {
   display: inline-flex;
   padding: 0.22rem;
   border: 1px solid rgba(90, 132, 198, 0.38);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.02);
 }
 

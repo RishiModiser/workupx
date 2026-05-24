@@ -23,7 +23,7 @@ $metaDescription = $metaDescription ?? 'WORKUPX community investment education p
 <header class="topbar glass">
     <div class="topbar-main">
         <a href="/" class="brand">WORKUPX<span>.COM</span></a>
-        <span class="market-status" aria-label="Markets live">MARKETS LIVE</span>
+        <span class="market-status">MARKETS LIVE</span>
         <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>
             <span></span><span></span><span></span>
         </button>
