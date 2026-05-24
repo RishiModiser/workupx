@@ -34,7 +34,7 @@ body {
 }
 
 body {
-  font-family: "Inter", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
   color: var(--text);
   background:
     radial-gradient(1150px 700px at 2% -20%, rgba(0, 229, 143, 0.21), transparent 60%),
@@ -423,7 +423,7 @@ p {
 .reward-card .progress span {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--accent-2), var(--accent));
+  background: linear-gradient(90deg, var(--gold), var(--accent-2));
 }
 
 .btn {
