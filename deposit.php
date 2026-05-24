@@ -3,18 +3,28 @@ require_once __DIR__ . '/includes/auth.php';
 require_login();
 $user = current_user();
 
-$usdtWallet = app_setting('usdt_wallet_address', 'TUSDT_DEMO_ADDRESS');
-$usdcWallet = app_setting('usdc_wallet_address', 'TUSDC_DEMO_ADDRESS');
+$usdtTrc20Wallet = app_setting('usdt_trc20_wallet_address', 'DEMO_TRC20_ADDRESS');
+$usdtBep20Wallet = app_setting('usdt_bep20_wallet_address', 'DEMO_BEP20_ADDRESS');
 
 if (is_post()) {
     verify_csrf();
 
     $amount = (float) ($_POST['amount'] ?? 0);
-    $asset = (string) ($_POST['asset'] ?? 'USDT_BEP20');
-    $wallet = $asset === 'USDC' ? $usdcWallet : $usdtWallet;
+    $asset = (string) ($_POST['asset'] ?? 'USDT_TRC20');
 
-    if ($amount < MIN_DEPOSIT_AMOUNT || !in_array($asset, ['USDT_BEP20', 'USDC'], true)) {
+    if ($amount < MIN_DEPOSIT_AMOUNT || !in_array($asset, ['USDT_TRC20', 'USDT_BEP20'], true)) {
         set_flash('error', 'Invalid deposit details.');
+        redirect('/deposit.php');
+    }
+
+    $wallet = match ($asset) {
+        'USDT_TRC20' => $usdtTrc20Wallet,
+        'USDT_BEP20' => $usdtBep20Wallet,
+        default => ''
+    };
+
+    if ($wallet === '') {
+        set_flash('error', 'Invalid asset wallet configuration.');
         redirect('/deposit.php');
     }
 
@@ -52,8 +62,8 @@ require_once __DIR__ . '/includes/header.php';
       <label>Amount (USD) <input type="number" name="amount" step="0.01" min="<?= MIN_DEPOSIT_AMOUNT ?>" required></label>
       <label>Asset
         <select name="asset">
+          <option value="USDT_TRC20">USDT (TRC20)</option>
           <option value="USDT_BEP20">USDT (BEP20)</option>
-          <option value="USDC">USDC</option>
         </select>
       </label>
       <label>Upload Payment Screenshot <input type="file" name="screenshot" accept="image/*" required></label>
@@ -63,9 +73,10 @@ require_once __DIR__ . '/includes/header.php';
   </div>
   <div class="card">
     <h2>Wallet Addresses</h2>
-    <p>USDT (BEP20): <code><?= e($usdtWallet) ?></code> <button class="btn btn-sm" data-copy="<?= e($usdtWallet) ?>">Copy</button></p>
-    <p>USDC: <code><?= e($usdcWallet) ?></code> <button class="btn btn-sm" data-copy="<?= e($usdcWallet) ?>">Copy</button></p>
+    <p>USDT (TRC20): <code><?= e($usdtTrc20Wallet) ?></code> <button class="btn btn-sm" data-copy="<?= e($usdtTrc20Wallet) ?>">Copy</button></p>
+    <p>USDT (BEP20): <code><?= e($usdtBep20Wallet) ?></code> <button class="btn btn-sm" data-copy="<?= e($usdtBep20Wallet) ?>">Copy</button></p>
     <img alt="QR placeholder" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=WORKUPX" style="border-radius:12px;max-width:180px">
+    <p class="muted">After transfer, upload screenshot and confirm payment via the WhatsApp support link below.</p>
     <p><a class="btn btn-gold" target="_blank" rel="noopener" href="<?= e(WHATSAPP_SUPPORT) ?>">Confirm on WhatsApp</a></p>
   </div>
 </section>

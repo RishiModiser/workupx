@@ -20,6 +20,17 @@ $wdStmt = db()->prepare('SELECT COALESCE(SUM(amount),0) total FROM withdrawals W
 $wdStmt->execute(['uid' => $uid]);
 $totalWd = (float) ($wdStmt->fetch()['total'] ?? 0);
 
+$refCountStmt = db()->prepare('SELECT COUNT(*) total FROM referrals WHERE referrer_user_id = :uid');
+$refCountStmt->execute(['uid' => $uid]);
+$refCount = (int) ($refCountStmt->fetch()['total'] ?? 0);
+
+$refEarnStmt = db()->prepare('SELECT COALESCE(SUM(commission_amount),0) total FROM referrals WHERE referrer_user_id = :uid');
+$refEarnStmt->execute(['uid' => $uid]);
+$refEarn = (float) ($refEarnStmt->fetch()['total'] ?? 0);
+
+$boostPercent = referral_earning_boost_percent($refCount);
+$salaryStatus = get_salary_status($uid, (string) $user['package_name']);
+
 $deposits = db()->prepare('SELECT * FROM deposits WHERE user_id = :uid ORDER BY created_at DESC LIMIT 10');
 $deposits->execute(['uid' => $uid]);
 $withdrawals = db()->prepare('SELECT * FROM withdrawals WHERE user_id = :uid ORDER BY created_at DESC LIMIT 10');
@@ -34,11 +45,28 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 <section class="grid grid-3">
   <div class="card"><div class="muted">Total Balance</div><div class="kpi counter" data-count="<?= e((string) ((float) $user['balance'])) ?>">0</div></div>
+  <div class="card"><div class="muted">Active Package</div><div class="kpi"><?= e(package_label((string) $user['package_name'])) ?></div></div>
   <div class="card"><div class="muted">Today Earnings</div><div class="kpi counter" data-count="<?= e((string) $todayEarn) ?>">0</div></div>
   <div class="card"><div class="muted">Total Earnings</div><div class="kpi counter" data-count="<?= e((string) $totalEarn) ?>">0</div></div>
+  <div class="card"><div class="muted">Referral Earnings</div><div class="kpi counter" data-count="<?= e((string) $refEarn) ?>">0</div></div>
+  <div class="card"><div class="muted">Referral Boost</div><div class="kpi"><?= e((string) $boostPercent) ?>%</div></div>
   <div class="card"><div class="muted">Total Deposits</div><div class="kpi counter" data-count="<?= e((string) $totalDep) ?>">0</div></div>
   <div class="card"><div class="muted">Total Withdrawals</div><div class="kpi counter" data-count="<?= e((string) $totalWd) ?>">0</div></div>
-  <div class="card"><div class="muted">Package</div><div class="kpi"><?= e(strtoupper((string) $user['package_name'])) ?></div></div>
+  <div class="card"><div class="muted">Copy Trade Access</div><div class="kpi">Enabled</div></div>
+  <div class="card"><div class="muted">Salary Status</div><div class="kpi"><?= $salaryStatus['eligible'] ? 'Eligible' : 'In Progress' ?></div></div>
+</section>
+
+<section class="card" style="margin-top:1rem">
+  <h2>Monthly Salary Achievement</h2>
+  <p class="muted">
+    Plan: <?= e(package_label((string) $user['package_name'])) ?> •
+    Target: <?= (int) $salaryStatus['required_referrals'] ?> <?= e(ucfirst((string) $salaryStatus['target_referral_plan'])) ?> referrals •
+    Progress: <?= (int) $salaryStatus['qualified_referrals'] ?>/<?= (int) $salaryStatus['required_referrals'] ?>
+  </p>
+  <p>
+    Monthly Reward: <strong><?= format_money((float) $salaryStatus['monthly_reward']) ?></strong> •
+    Weekly Payout: <strong><?= format_money((float) $salaryStatus['weekly_reward']) ?></strong>
+  </p>
 </section>
 
 <section class="grid grid-2" style="margin-top:1rem">

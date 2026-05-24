@@ -111,6 +111,74 @@ function format_money(float $amount): string
     return '$' . number_format($amount, 2);
 }
 
+function get_withdrawal_fee_percent(): float
+{
+    $configured = (float) app_setting('withdrawal_fee_percent', (string) DEFAULT_WITHDRAWAL_FEE_PERCENT);
+    return max(0, min(100, $configured));
+}
+
+function package_catalog(): array
+{
+    return [
+        'silver' => ['label' => 'Silver', 'deposit' => 125.0, 'welcome_bonus' => 12.0],
+        'gold' => ['label' => 'Gold', 'deposit' => 250.0, 'welcome_bonus' => 25.0],
+        'diamond' => ['label' => 'Diamond', 'deposit' => 500.0, 'welcome_bonus' => 50.0],
+    ];
+}
+
+function package_config(string $package): array
+{
+    $catalog = package_catalog();
+    return $catalog[$package] ?? $catalog['silver'];
+}
+
+function package_label(string $package): string
+{
+    return package_config($package)['label'];
+}
+
+function referral_earning_boost_percent(int $referrals): float
+{
+    $perReferral = (float) app_setting('referral_earning_boost_per_user_percent', '0.5');
+    return round(max(0, $referrals) * max(0, $perReferral), 2);
+}
+
+function salary_rulebook(): array
+{
+    return [
+        'silver' => ['required_referrals' => 30, 'target_referral_plan' => 'silver', 'monthly_reward' => 50.0],
+        'gold' => ['required_referrals' => 20, 'target_referral_plan' => 'silver', 'monthly_reward' => 100.0],
+        'diamond' => ['required_referrals' => 10, 'target_referral_plan' => 'gold', 'monthly_reward' => 200.0],
+    ];
+}
+
+function get_salary_status(int $userId, string $package): array
+{
+    $rules = salary_rulebook();
+    $rule = $rules[$package] ?? $rules['silver'];
+
+    $stmt = db()->prepare(
+        'SELECT COUNT(*) AS total
+         FROM referrals r
+         INNER JOIN users u ON u.id = r.referred_user_id
+         WHERE r.referrer_user_id = :uid AND u.package_name = :target_plan'
+    );
+    $stmt->execute(['uid' => $userId, 'target_plan' => $rule['target_referral_plan']]);
+    $qualifiedReferrals = (int) ($stmt->fetch()['total'] ?? 0);
+
+    $isEligible = $qualifiedReferrals >= (int) $rule['required_referrals'];
+    $monthlyReward = (float) $rule['monthly_reward'];
+
+    return [
+        'required_referrals' => (int) $rule['required_referrals'],
+        'qualified_referrals' => $qualifiedReferrals,
+        'target_referral_plan' => (string) $rule['target_referral_plan'],
+        'monthly_reward' => $monthlyReward,
+        'weekly_reward' => round($monthlyReward / 4, 2),
+        'eligible' => $isEligible,
+    ];
+}
+
 function calculate_available_withdrawal_balance(int $userId, ?int $excludeWithdrawalId = null): float
 {
     $balanceStmt = db()->prepare('SELECT balance FROM users WHERE id = :uid LIMIT 1');

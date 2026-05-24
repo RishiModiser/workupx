@@ -35,6 +35,9 @@ const MAX_REFERRAL_CODE_ATTEMPTS = 10;
 const MIN_DEPOSIT_AMOUNT = 10.0;
 const MIN_WITHDRAWAL_AMOUNT = 5.0;
 const WITHDRAWAL_PROCESSING_HOURS = 24;
+const DEFAULT_WITHDRAWAL_FEE_PERCENT = 20.0;
+const SUPPORTED_WITHDRAWAL_NETWORKS = ['TRC20', 'BEP20'];
+const MYSQL_INTEGRITY_CONSTRAINT_CODE = '23000';
 
 $defaultScheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $defaultHost = $_SERVER['HTTP_HOST'] ?? 'localhost';

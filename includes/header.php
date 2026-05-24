@@ -25,8 +25,8 @@ $metaDescription = $metaDescription ?? 'WORKUPX community investment education p
     <nav>
         <a href="/community.php">Community</a>
         <a href="/quote.php">Quote</a>
-        <a href="/trade.php">Trade</a>
-        <a href="/assets.php">Assets</a>
+        <a href="/trade.php">Copy Trade</a>
+        <a href="/assets.php">Dashboard</a>
         <a href="/referral.php">Referral</a>
         <?php if (!empty($_SESSION['user_id'])): ?>
             <a href="/profile.php">Profile</a>
