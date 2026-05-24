@@ -3,18 +3,28 @@ require_once __DIR__ . '/includes/auth.php';
 require_login();
 $user = current_user();
 
-$usdtTrc20Wallet = app_setting('usdt_trc20_wallet_address', 'TXQ6P1PAv2vLqeXrwCvcmpguFWDZc5zFNd');
-$usdtBep20Wallet = app_setting('usdt_bep20_wallet_address', '0xea90fcbdee28f842cafd6985967855501ffd4f8d');
+$usdtTrc20Wallet = app_setting('usdt_trc20_wallet_address', 'DEMO_TRC20_ADDRESS');
+$usdtBep20Wallet = app_setting('usdt_bep20_wallet_address', 'DEMO_BEP20_ADDRESS');
 
 if (is_post()) {
     verify_csrf();
 
     $amount = (float) ($_POST['amount'] ?? 0);
     $asset = (string) ($_POST['asset'] ?? 'USDT_TRC20');
-    $wallet = $asset === 'USDT_BEP20' ? $usdtBep20Wallet : $usdtTrc20Wallet;
 
     if ($amount < MIN_DEPOSIT_AMOUNT || !in_array($asset, ['USDT_TRC20', 'USDT_BEP20'], true)) {
         set_flash('error', 'Invalid deposit details.');
+        redirect('/deposit.php');
+    }
+
+    $wallet = match ($asset) {
+        'USDT_TRC20' => $usdtTrc20Wallet,
+        'USDT_BEP20' => $usdtBep20Wallet,
+        default => ''
+    };
+
+    if ($wallet === '') {
+        set_flash('error', 'Invalid asset wallet configuration.');
         redirect('/deposit.php');
     }
 
@@ -66,7 +76,7 @@ require_once __DIR__ . '/includes/header.php';
     <p>USDT (TRC20): <code><?= e($usdtTrc20Wallet) ?></code> <button class="btn btn-sm" data-copy="<?= e($usdtTrc20Wallet) ?>">Copy</button></p>
     <p>USDT (BEP20): <code><?= e($usdtBep20Wallet) ?></code> <button class="btn btn-sm" data-copy="<?= e($usdtBep20Wallet) ?>">Copy</button></p>
     <img alt="QR placeholder" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=WORKUPX" style="border-radius:12px;max-width:180px">
-    <p class="muted">After transfer, upload screenshot and confirm payment on WhatsApp (+44 7599 196345).</p>
+    <p class="muted">After transfer, upload screenshot and confirm payment via the WhatsApp support link below.</p>
     <p><a class="btn btn-gold" target="_blank" rel="noopener" href="<?= e(WHATSAPP_SUPPORT) ?>">Confirm on WhatsApp</a></p>
   </div>
 </section>

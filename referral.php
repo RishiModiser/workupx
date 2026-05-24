@@ -12,6 +12,7 @@ $earnStmt = db()->prepare('SELECT COALESCE(SUM(commission_amount),0) total FROM 
 $earnStmt->execute(['uid' => $uid]);
 $refEarn = (float) ($earnStmt->fetch()['total'] ?? 0);
 $boostPercent = referral_earning_boost_percent($refCount);
+$boostPerReferral = (float) app_setting('referral_earning_boost_per_user_percent', '0.5');
 $salaryStatus = get_salary_status($uid, (string) $user['package_name']);
 
 $treeStmt = db()->prepare('SELECT u.full_name, u.created_at FROM referrals r INNER JOIN users u ON u.id = r.referred_user_id WHERE r.referrer_user_id = :uid ORDER BY r.created_at DESC LIMIT 50');
@@ -46,7 +47,7 @@ require_once __DIR__ . '/includes/header.php';
   </article>
   <article class="card">
     <h3>Referral Earning Boost</h3>
-    <p>+0.5% per referral based on platform setting</p>
+    <p>+<?= e((string) $boostPerReferral) ?>% per referral based on platform setting</p>
     <span class="badge approved">Current +<?= e((string) $boostPercent) ?>%</span>
   </article>
 </section>

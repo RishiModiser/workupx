@@ -9,12 +9,9 @@ if (is_post()) {
     $amount = (float) ($_POST['amount'] ?? 0);
     $wallet = trim((string) ($_POST['wallet_address'] ?? ''));
     $network = trim((string) ($_POST['network'] ?? ''));
-    $feePercent = get_withdrawal_fee_percent();
-    $feeAmount = round($amount * ($feePercent / 100), 2);
-    $netAmount = round($amount - $feeAmount, 2);
 
-    if ($amount < MIN_WITHDRAWAL_AMOUNT || $wallet === '' || !in_array($network, ['TRC20', 'BEP20'], true)) {
-        set_flash('error', 'Please fill all fields and request at least ' . format_money(MIN_WITHDRAWAL_AMOUNT) . '.');
+    if ($amount < MIN_WITHDRAWAL_AMOUNT || $wallet === '' || !in_array($network, SUPPORTED_WITHDRAWAL_NETWORKS, true)) {
+        set_flash('error', 'Please fill all fields correctly, use a valid network, and request at least ' . format_money(MIN_WITHDRAWAL_AMOUNT) . '.');
         redirect('/withdrawal.php');
     }
 
@@ -24,6 +21,10 @@ if (is_post()) {
         set_flash('error', 'Insufficient balance for this request.');
         redirect('/withdrawal.php');
     }
+
+    $feePercent = get_withdrawal_fee_percent();
+    $feeAmount = round($amount * ($feePercent / 100), 2);
+    $netAmount = round($amount - $feeAmount, 2);
 
     $stmt = db()->prepare('INSERT INTO withdrawals (user_id, amount, fee_percent, fee_amount, net_amount, wallet_address, network, status, created_at, updated_at) VALUES (:uid,:amount,:fee_percent,:fee_amount,:net_amount,:wallet,:network,"pending",NOW(),NOW())');
     $stmt->execute([
@@ -49,14 +50,15 @@ require_once __DIR__ . '/includes/header.php';
 ?>
 <section class="card" style="max-width:720px;margin:0 auto">
   <h1>Withdrawal Request</h1>
-  <p class="muted">Withdrawals processed within <?= WITHDRAWAL_PROCESSING_HOURS ?> hours. A <?= e((string) get_withdrawal_fee_percent()) ?>% platform fee is deducted automatically.</p>
+  <p class="muted">Withdrawals processed within <?= WITHDRAWAL_PROCESSING_HOURS ?> hours. The current admin-configured fee is <?= e((string) get_withdrawal_fee_percent()) ?>%.</p>
   <form method="post" action="/withdrawal.php">
     <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
     <label>Wallet Address <input name="wallet_address" maxlength="190" required></label>
     <label>Network
       <select name="network" required>
-        <option value="TRC20">TRC20</option>
-        <option value="BEP20">BEP20</option>
+        <?php foreach (SUPPORTED_WITHDRAWAL_NETWORKS as $supportedNetwork): ?>
+          <option value="<?= e($supportedNetwork) ?>"><?= e($supportedNetwork) ?></option>
+        <?php endforeach; ?>
       </select>
     </label>
     <label>Amount (USD) <input type="number" step="0.01" min="<?= MIN_WITHDRAWAL_AMOUNT ?>" name="amount" required></label>

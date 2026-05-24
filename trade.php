@@ -24,19 +24,13 @@ if (is_post()) {
 
     $referenceTime = (string) ($signal['scheduled_at'] ?: $signal['created_at']);
     $referenceTs = strtotime($referenceTime);
+    if ($referenceTs === false) {
+        $referenceTs = time();
+    }
     $expiresInMinutes = max(1, (int) ($signal['expires_in_minutes'] ?? 60));
     if ($referenceTs !== false && time() > ($referenceTs + ($expiresInMinutes * 60))) {
         set_flash('error', 'This copy-trade code has expired.');
         redirect('/trade.php');
-    }
-
-    if ((int) ($signal['one_time_use'] ?? 1) === 1) {
-        $usageCheck = db()->prepare('SELECT id FROM copy_trade_usage WHERE trade_signal_id = :signal_id AND user_id = :user_id LIMIT 1');
-        $usageCheck->execute(['signal_id' => (int) $signal['id'], 'user_id' => (int) $user['id']]);
-        if ($usageCheck->fetch()) {
-            set_flash('error', 'This copy-trade code has already been used on your account.');
-            redirect('/trade.php');
-        }
     }
 
     $packageInfo = package_config((string) $user['package_name']);
@@ -46,9 +40,17 @@ if (is_post()) {
     $refCountStmt->execute(['uid' => (int) $user['id']]);
     $boost = referral_earning_boost_percent((int) ($refCountStmt->fetch()['total'] ?? 0));
     $basePercent = max(0.1, (float) ($signal['profit_percent'] ?? 1.0));
-    $percent = round($basePercent + $boost, 2);
+    $minPercent = (float) app_setting('estimated_profit_min', '1');
+    $maxPercent = (float) app_setting('estimated_profit_max', '4');
+    if ($minPercent > $maxPercent) {
+        [$minPercent, $maxPercent] = [$maxPercent, $minPercent];
+    }
+    $clampedPercent = max($minPercent, min($maxPercent, $basePercent));
+    $percent = round($clampedPercent + $boost, 2);
+    $lossChance = (int) app_setting('estimated_loss_chance_percent', '0');
+    $isLoss = random_int(1, 100) <= max(0, min(100, $lossChance));
     $estimated = round($base * ($percent / 100), 2);
-    $status = 'estimated_gain';
+    $status = $isLoss ? 'estimated_loss' : 'estimated_gain';
     $note = 'Educational copy-trade simulation result based on admin-configured percentage.';
 
     $pdo = db();
@@ -65,29 +67,35 @@ if (is_post()) {
             'user_id' => (int) $user['id'],
             'signal_id' => (int) $signal['id'],
             'code' => $signalCode,
-            'percent' => $percent,
+            'percent' => $isLoss ? -$percent : $percent,
             'amount' => $estimated,
             'status' => $status,
             'note' => $note,
         ]);
 
         $tradeId = (int) $pdo->lastInsertId();
-        $pdo->prepare('UPDATE users SET balance = balance + :amount, total_earnings = total_earnings + :amount WHERE id = :uid')
-            ->execute(['amount' => $estimated, 'uid' => (int) $user['id']]);
-        $earning = $pdo->prepare('INSERT INTO earnings (user_id, source_type, source_id, amount, note, created_at) VALUES (:user_id,"trade",:source_id,:amount,:note,NOW())');
-        $earning->execute([
-            'user_id' => (int) $user['id'],
-            'source_id' => $tradeId,
-            'amount' => $estimated,
-            'note' => 'Educational copy-trade estimated profit credited to wallet.',
-        ]);
+        if (!$isLoss) {
+            $pdo->prepare('UPDATE users SET balance = balance + :amount, total_earnings = total_earnings + :amount WHERE id = :uid')
+                ->execute(['amount' => $estimated, 'uid' => (int) $user['id']]);
+            $earning = $pdo->prepare('INSERT INTO earnings (user_id, source_type, source_id, amount, note, created_at) VALUES (:user_id,"trade",:source_id,:amount,:note,NOW())');
+            $earning->execute([
+                'user_id' => (int) $user['id'],
+                'source_id' => $tradeId,
+                'amount' => $estimated,
+                'note' => 'Educational copy-trade estimated profit credited to wallet.',
+            ]);
+        }
 
         $pdo->commit();
     } catch (Throwable $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
-        set_flash('error', 'Copy-trade execution failed. Please try again.');
+        if ($e instanceof PDOException && $e->getCode() === MYSQL_INTEGRITY_CONSTRAINT_CODE) {
+            set_flash('error', 'This copy-trade code has already been used on your account.');
+        } else {
+            set_flash('error', 'Copy-trade execution failed. Please try again.');
+        }
         redirect('/trade.php');
     }
 
@@ -95,10 +103,10 @@ if (is_post()) {
     $notif->execute([
         'user_id' => (int) $user['id'],
         'title' => 'Trade Simulation Complete',
-        'body' => sprintf('Estimated Educational Result: +%s%% (%s).', $percent, $signalCode),
+        'body' => sprintf('Estimated Educational Result: %s%s%% (%s).', $isLoss ? '-' : '+', $percent, $signalCode),
     ]);
 
-    set_flash('success', sprintf('Estimated Educational Result: +%s%% (%s).', $percent, $signalCode));
+    set_flash('success', sprintf('Estimated Educational Result: %s%s%% (%s).', $isLoss ? '-' : '+', $percent, $signalCode));
     redirect('/trade.php');
 }
 

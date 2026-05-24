@@ -178,7 +178,7 @@ INSERT INTO settings (setting_key, setting_value) VALUES
 ('referral_commission_percent', '5'),
 ('referral_earning_boost_per_user_percent', '0.5'),
 ('withdrawal_fee_percent', '20'),
-('usdt_trc20_wallet_address', 'TXQ6P1PAv2vLqeXrwCvcmpguFWDZc5zFNd'),
-('usdt_bep20_wallet_address', '0xea90fcbdee28f842cafd6985967855501ffd4f8d'),
+('usdt_trc20_wallet_address', 'DEMO_TRC20_ADDRESS'),
+('usdt_bep20_wallet_address', 'DEMO_BEP20_ADDRESS'),
 ('site_notice', 'Market risk applies. No guaranteed profits.')
 ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value);

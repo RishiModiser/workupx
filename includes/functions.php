@@ -111,6 +111,12 @@ function format_money(float $amount): string
     return '$' . number_format($amount, 2);
 }
 
+function get_withdrawal_fee_percent(): float
+{
+    $configured = (float) app_setting('withdrawal_fee_percent', (string) DEFAULT_WITHDRAWAL_FEE_PERCENT);
+    return max(0, min(100, $configured));
+}
+
 function package_catalog(): array
 {
     return [
@@ -185,12 +191,6 @@ function calculate_available_withdrawal_balance(int $userId, ?int $excludeWithdr
     if ($excludeWithdrawalId !== null) {
         $query .= ' AND id != :exclude_id';
         $params['exclude_id'] = $excludeWithdrawalId;
-    }
-
-    function get_withdrawal_fee_percent(): float
-    {
-        $configured = (float) app_setting('withdrawal_fee_percent', (string) DEFAULT_WITHDRAWAL_FEE_PERCENT);
-        return max(0, min(100, $configured));
     }
 
     $pendingStmt = db()->prepare($query);
