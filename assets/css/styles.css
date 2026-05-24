@@ -34,7 +34,7 @@ body {
 }
 
 body {
-  font-family: "Inter", "IBM Plex Sans", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Arial, sans-serif;
   color: var(--text);
   background:
     radial-gradient(1150px 700px at 2% -20%, rgba(0, 229, 143, 0.21), transparent 60%),
@@ -583,8 +583,7 @@ details summary:focus-visible {
 
 .table th {
   font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   color: #acc6ec;
   background: rgba(44, 165, 255, 0.08);
 }
