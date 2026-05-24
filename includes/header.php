@@ -23,6 +23,7 @@ $metaDescription = $metaDescription ?? 'WORKUPX community investment education p
 <header class="topbar glass">
     <div class="topbar-main">
         <a href="/" class="brand">WORKUPX<span>.COM</span></a>
+        <span class="market-status" aria-label="Market status">MARKETS LIVE</span>
         <button class="menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>
             <span></span><span></span><span></span>
         </button>
@@ -42,11 +43,11 @@ $metaDescription = $metaDescription ?? 'WORKUPX community investment education p
         </nav>
     </div>
     <div class="ticker" aria-hidden="true">
-        <span>BTC Live</span>
-        <span>ETH Live</span>
-        <span>SOL Live</span>
-        <span>BNB Live</span>
-        <span>XRP Live</span>
+        <span>BTC/USDT +2.41%</span>
+        <span>ETH/USDT +1.32%</span>
+        <span>SOL/USDT -0.68%</span>
+        <span>BNB/USDT +0.92%</span>
+        <span>XRP/USDT -0.44%</span>
     </div>
 </header>
 <main class="container">
