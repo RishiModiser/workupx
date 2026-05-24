@@ -19,6 +19,7 @@ require_once __DIR__ . '/../includes/header.php';
 </section>
 <section class="grid grid-3" style="margin-top:1rem">
   <div class="card"><div class="muted">Total Users</div><div class="kpi" data-count="<?= $stats['users'] ?>"><?= $stats['users'] ?></div></div>
+  <div class="card"><div class="muted">Active Investors</div><div class="kpi"><?= (int) (db()->query('SELECT COUNT(*) c FROM users WHERE role="user" AND balance > 0')->fetch()['c'] ?? 0) ?></div></div>
   <div class="card"><div class="muted">Total Deposits</div><div class="kpi"><?= format_money($stats['deposits']) ?></div></div>
   <div class="card"><div class="muted">Total Withdrawals</div><div class="kpi"><?= format_money($stats['withdrawals']) ?></div></div>
   <div class="card"><div class="muted">Referral Commissions</div><div class="kpi"><?= format_money($stats['referrals']) ?></div></div>

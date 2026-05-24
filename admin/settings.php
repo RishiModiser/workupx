@@ -2,7 +2,17 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_admin();
 
-$keys = ['estimated_profit_min','estimated_profit_max','estimated_loss_chance_percent','referral_commission_percent','usdt_wallet_address','usdc_wallet_address','site_notice'];
+$keys = [
+    'estimated_profit_min',
+    'estimated_profit_max',
+    'estimated_loss_chance_percent',
+    'referral_commission_percent',
+    'referral_earning_boost_per_user_percent',
+    'withdrawal_fee_percent',
+    'usdt_trc20_wallet_address',
+    'usdt_bep20_wallet_address',
+    'site_notice'
+];
 
 if (is_post()) {
     verify_csrf();
@@ -37,8 +47,10 @@ require_once __DIR__ . '/../includes/header.php';
     <label>Estimated Profit Max (%) <input name="estimated_profit_max" value="<?= e($settings['estimated_profit_max']) ?>"></label>
     <label>Estimated Loss Chance (%) <input name="estimated_loss_chance_percent" value="<?= e($settings['estimated_loss_chance_percent']) ?>"></label>
     <label>Referral Commission (%) <input name="referral_commission_percent" value="<?= e($settings['referral_commission_percent']) ?>"></label>
-    <label>USDT Wallet Address <input name="usdt_wallet_address" value="<?= e($settings['usdt_wallet_address']) ?>"></label>
-    <label>USDC Wallet Address <input name="usdc_wallet_address" value="<?= e($settings['usdc_wallet_address']) ?>"></label>
+    <label>Referral Earning Boost Per User (%) <input name="referral_earning_boost_per_user_percent" value="<?= e($settings['referral_earning_boost_per_user_percent']) ?>"></label>
+    <label>Withdrawal Fee (%) <input name="withdrawal_fee_percent" value="<?= e($settings['withdrawal_fee_percent']) ?>"></label>
+    <label>USDT TRC20 Wallet Address <input name="usdt_trc20_wallet_address" value="<?= e($settings['usdt_trc20_wallet_address']) ?>"></label>
+    <label>USDT BEP20 Wallet Address <input name="usdt_bep20_wallet_address" value="<?= e($settings['usdt_bep20_wallet_address']) ?>"></label>
     <label>Site Notice <textarea name="site_notice"><?= e($settings['site_notice']) ?></textarea></label>
     <button class="btn" type="submit">Save Settings</button>
   </form>

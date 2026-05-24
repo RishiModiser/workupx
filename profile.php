@@ -7,15 +7,15 @@ if (is_post()) {
     verify_csrf();
     $name = trim((string) ($_POST['full_name'] ?? ''));
     $phone = trim((string) ($_POST['phone'] ?? ''));
-    $package = (string) ($_POST['package_name'] ?? 'starter');
+    $package = (string) ($_POST['package_name'] ?? 'silver');
 
     if ($name === '' || $phone === '') {
         set_flash('error', 'Name and phone are required.');
         redirect('/profile.php');
     }
 
-    if (!in_array($package, ['starter', 'advanced', 'premium'], true)) {
-        $package = 'starter';
+    if (!in_array($package, ['silver', 'gold', 'diamond'], true)) {
+        $package = 'silver';
     }
 
     $stmt = db()->prepare('UPDATE users SET full_name = :name, phone = :phone, package_name = :package WHERE id = :id');
@@ -42,9 +42,9 @@ require_once __DIR__ . '/includes/header.php';
     <label>Phone <input name="phone" value="<?= e($user['phone']) ?>" required></label>
     <label>Package
       <select name="package_name">
-        <option value="starter" <?= $user['package_name'] === 'starter' ? 'selected' : '' ?>>$50 Starter</option>
-        <option value="advanced" <?= $user['package_name'] === 'advanced' ? 'selected' : '' ?>>$100 Advanced</option>
-        <option value="premium" <?= $user['package_name'] === 'premium' ? 'selected' : '' ?>>$200 Premium</option>
+        <option value="silver" <?= $user['package_name'] === 'silver' ? 'selected' : '' ?>>Silver</option>
+        <option value="gold" <?= $user['package_name'] === 'gold' ? 'selected' : '' ?>>Gold</option>
+        <option value="diamond" <?= $user['package_name'] === 'diamond' ? 'selected' : '' ?>>Diamond</option>
       </select>
     </label>
     <button class="btn" type="submit">Save Settings</button>

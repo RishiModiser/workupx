@@ -12,7 +12,7 @@ if (is_post()) {
     $password = (string) ($_POST['password'] ?? '');
     $confirmPassword = (string) ($_POST['confirm_password'] ?? '');
     $referralCode = strtoupper(trim((string) ($_POST['referral_code'] ?? $prefilledReferralCode)));
-    $package = (string) ($_POST['package_name'] ?? 'starter');
+    $package = (string) ($_POST['package_name'] ?? 'silver');
 
     if ($fullName === '' || !filter_var($email, FILTER_VALIDATE_EMAIL) || $phone === '') {
         set_flash('error', 'Please fill all required fields correctly.');
@@ -24,8 +24,8 @@ if (is_post()) {
         redirect('/register.php');
     }
 
-    if (!in_array($package, ['starter', 'advanced', 'premium'], true)) {
-        $package = 'starter';
+    if (!in_array($package, ['silver', 'gold', 'diamond'], true)) {
+        $package = 'silver';
     }
 
     $existsStmt = db()->prepare('SELECT id FROM users WHERE email = :email LIMIT 1');
@@ -64,7 +64,10 @@ if (is_post()) {
         }
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-        $stmt = $pdo->prepare('INSERT INTO users (full_name, email, phone, password_hash, referral_code, referred_by_user_id, package_name, created_at, updated_at) VALUES (:full_name,:email,:phone,:password_hash,:referral_code,:referred_by,:package,NOW(),NOW())');
+        $packageInfo = package_config($package);
+        $welcomeBonus = (float) $packageInfo['welcome_bonus'];
+
+        $stmt = $pdo->prepare('INSERT INTO users (full_name, email, phone, password_hash, referral_code, referred_by_user_id, package_name, balance, total_earnings, created_at, updated_at) VALUES (:full_name,:email,:phone,:password_hash,:referral_code,:referred_by,:package,:balance,:total_earnings,NOW(),NOW())');
         $stmt->execute([
             'full_name' => $fullName,
             'email' => $email,
@@ -73,6 +76,8 @@ if (is_post()) {
             'referral_code' => $myCode,
             'referred_by' => $referredBy,
             'package' => $package,
+            'balance' => $welcomeBonus,
+            'total_earnings' => $welcomeBonus,
         ]);
 
         $newUserId = (int) $pdo->lastInsertId();
@@ -82,8 +87,15 @@ if (is_post()) {
             $refStmt->execute(['referrer' => $referredBy, 'referred' => $newUserId]);
         }
 
+        $pdo->prepare('INSERT INTO earnings (user_id, source_type, source_id, amount, note, created_at) VALUES (:uid,"manual",NULL,:amount,:note,NOW())')
+            ->execute([
+                'uid' => $newUserId,
+                'amount' => $welcomeBonus,
+                'note' => package_label($package) . ' welcome bonus credited on registration.',
+            ]);
+
         $pdo->commit();
-        set_flash('success', 'Registration successful. Please log in.');
+        set_flash('success', 'Registration successful. Welcome bonus credited. Please log in.');
         redirect('/login.php');
     } catch (Throwable $e) {
         $pdo->rollBack();
@@ -108,9 +120,9 @@ require_once __DIR__ . '/includes/header.php';
     <label>Referral Code (optional) <input name="referral_code" maxlength="20" value="<?= e($prefilledReferralCode) ?>"></label>
     <label>Investment Package
       <select name="package_name" required>
-        <option value="starter">$50 Starter</option>
-        <option value="advanced">$100 Advanced</option>
-        <option value="premium">$200 Premium</option>
+        <option value="silver">Silver • Deposit $125 • Welcome Bonus $12</option>
+        <option value="gold">Gold • Deposit $250 • Welcome Bonus $25</option>
+        <option value="diamond">Diamond • Deposit $500 • Welcome Bonus $50</option>
       </select>
     </label>
     <button class="btn" type="submit">Create Account</button>

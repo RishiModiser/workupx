@@ -42,11 +42,13 @@ $pageTitle = 'Manage Withdrawals';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 <section class="card"><h1>Manage Withdrawals</h1><p><a href="/admin/index.php">Back</a></p>
-<div class="table-wrap"><table class="table"><thead><tr><th>User</th><th>Amount</th><th>Wallet</th><th>Network</th><th>Status</th><th>Action</th></tr></thead><tbody>
+<div class="table-wrap"><table class="table"><thead><tr><th>User</th><th>Gross</th><th>Fee</th><th>Net</th><th>Wallet</th><th>Network</th><th>Status</th><th>Action</th></tr></thead><tbody>
 <?php foreach ($rows as $r): ?>
 <tr>
 <td><?= e($r['full_name']) ?><br><small><?= e($r['email']) ?></small></td>
 <td><?= format_money((float)$r['amount']) ?></td>
+<td><?= format_money((float)($r['fee_amount'] ?? 0)) ?></td>
+<td><?= format_money((float)($r['net_amount'] ?? $r['amount'])) ?></td>
 <td><?= e($r['wallet_address']) ?></td>
 <td><?= e($r['network']) ?></td>
 <td class="<?= e($r['status']) ?>"><?= e($r['status']) ?></td>

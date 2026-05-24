@@ -11,6 +11,8 @@ $refCount = (int) ($countStmt->fetch()['total'] ?? 0);
 $earnStmt = db()->prepare('SELECT COALESCE(SUM(commission_amount),0) total FROM referrals WHERE referrer_user_id = :uid');
 $earnStmt->execute(['uid' => $uid]);
 $refEarn = (float) ($earnStmt->fetch()['total'] ?? 0);
+$boostPercent = referral_earning_boost_percent($refCount);
+$salaryStatus = get_salary_status($uid, (string) $user['package_name']);
 
 $treeStmt = db()->prepare('SELECT u.full_name, u.created_at FROM referrals r INNER JOIN users u ON u.id = r.referred_user_id WHERE r.referrer_user_id = :uid ORDER BY r.created_at DESC LIMIT 50');
 $treeStmt->execute(['uid' => $uid]);
@@ -23,17 +25,30 @@ require_once __DIR__ . '/includes/header.php';
 <section class="grid grid-3">
   <div class="card"><div class="muted">Referral Count</div><div class="kpi" data-count="<?= $refCount ?>"><?= $refCount ?></div></div>
   <div class="card"><div class="muted">Referral Earnings</div><div class="kpi"><?= format_money($refEarn) ?></div></div>
-  <div class="card"><div class="muted">Your Code</div><div class="kpi accent"><?= e($user['referral_code']) ?></div></div>
+  <div class="card"><div class="muted">Earning Boost</div><div class="kpi accent"><?= e((string) $boostPercent) ?>%</div></div>
 </section>
 <section class="card" style="margin-top:1rem">
-  <h2>Unique Referral Link</h2>
+  <h2>Your Referral Access</h2>
+  <p>Your code: <strong><?= e($user['referral_code']) ?></strong></p>
   <input value="<?= e($link) ?>" readonly>
   <button class="btn btn-sm" data-copy="<?= e($link) ?>">Copy</button>
 </section>
 <section class="grid grid-3" style="margin-top:1rem">
-  <article class="card"><h3>20 Referrals</h3><p>Bike Reward</p><span class="badge <?= $refCount >= 20 ? 'approved' : 'pending' ?>"><?= $refCount >= 20 ? 'Unlocked' : 'In Progress' ?></span></article>
-  <article class="card"><h3>40 Referrals</h3><p>Europe Trip Reward</p><span class="badge <?= $refCount >= 40 ? 'approved' : 'pending' ?>"><?= $refCount >= 40 ? 'Unlocked' : 'In Progress' ?></span></article>
-  <article class="card"><h3>80 Referrals</h3><p>Car Reward</p><span class="badge <?= $refCount >= 80 ? 'approved' : 'pending' ?>"><?= $refCount >= 80 ? 'Unlocked' : 'In Progress' ?></span></article>
+  <article class="card">
+    <h3>Salary Qualification</h3>
+    <p><?= (int) $salaryStatus['qualified_referrals'] ?> / <?= (int) $salaryStatus['required_referrals'] ?> <?= e(ucfirst((string) $salaryStatus['target_referral_plan'])) ?> referrals</p>
+    <span class="badge <?= $salaryStatus['eligible'] ? 'approved' : 'pending' ?>"><?= $salaryStatus['eligible'] ? 'Eligible' : 'In Progress' ?></span>
+  </article>
+  <article class="card">
+    <h3>Monthly Reward</h3>
+    <p><?= format_money((float) $salaryStatus['monthly_reward']) ?> credited over 4 weeks</p>
+    <span class="badge approved"><?= format_money((float) $salaryStatus['weekly_reward']) ?> / week</span>
+  </article>
+  <article class="card">
+    <h3>Referral Earning Boost</h3>
+    <p>+0.5% per referral based on platform setting</p>
+    <span class="badge approved">Current +<?= e((string) $boostPercent) ?>%</span>
+  </article>
 </section>
 <section class="card" style="margin-top:1rem">
   <h2>Referral Network</h2>
